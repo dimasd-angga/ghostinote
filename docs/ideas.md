@@ -16,3 +16,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Add a small button to copy a note's contents to clipboard.
 - Consider supporting drag-and-drop of .md files onto the overlay to load them.
 - Investigate Touch Bar support for hide/show even on older MacBooks Pro.
+- Idea: support drag-handle for resizing from any edge, not just the corner.
