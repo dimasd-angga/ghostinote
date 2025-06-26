@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2025-06-27: docs: add a research note from initial AppKit experiments
 - 2025-06-21: docs: phrase the threat model more cautiously
 - 2026-04-28: docs: refine the FAQ phrasing on permissions
 - 2026-04-27: docs: minor copy fixes in roadmap
