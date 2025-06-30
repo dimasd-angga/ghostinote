@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2025-06-30: docs: first sketch of the architecture diagram in prose form
 - 2025-06-30: docs: add a research note about NSVisualEffectView and capture exclusion
 - 2025-06-27: docs: add a research note from initial AppKit experiments
 - 2025-06-21: docs: phrase the threat model more cautiously
