@@ -12,3 +12,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Verified: Google Meet via Chrome 126 getDisplayMedia correctly skips our window.
 - Verified: QuickTime Player's screen recording cleanly excludes the overlay.
 - Confirmed: NSVisualEffectView does not affect capture exclusion - the exclusion is per-window, not per-view.
+- Initial test: minimal NSWindow with sharingType=.none works in isolation. Need to confirm with NSVisualEffectView background.
