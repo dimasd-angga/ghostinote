@@ -4,3 +4,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Add a small character/word count in the status row.
 - Add a keyboard shortcut to instantly cycle opacity between 100% and 60%.
 - Idea: per-note color tag rendered as a tiny dot in the toolbar.
+- Consider an automatic backup of the notes folder to ~/Documents/Ghostinote-backups/ weekly.
