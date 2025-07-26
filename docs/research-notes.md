@@ -14,3 +14,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Confirmed: NSVisualEffectView does not affect capture exclusion - the exclusion is per-window, not per-view.
 - Initial test: minimal NSWindow with sharingType=.none works in isolation. Need to confirm with NSVisualEffectView background.
 - Noticed: AppKit logs nothing when sharingType is set; no public KVO either. We rely on the self-test for verification.
+- Confirmed: setting sharingType after the window is on screen still works, but a brief frame may be captured. Better to set in init.
