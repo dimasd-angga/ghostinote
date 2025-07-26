@@ -13,3 +13,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Verified: QuickTime Player's screen recording cleanly excludes the overlay.
 - Confirmed: NSVisualEffectView does not affect capture exclusion - the exclusion is per-window, not per-view.
 - Initial test: minimal NSWindow with sharingType=.none works in isolation. Need to confirm with NSVisualEffectView background.
+- Noticed: AppKit logs nothing when sharingType is set; no public KVO either. We rely on the self-test for verification.
