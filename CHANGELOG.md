@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2025-07-26: docs: initial draft of the platform-apis doc
 - 2025-07-13: docs: first cut of the roadmap
 - 2025-06-30: docs: first sketch of the architecture diagram in prose form
 - 2025-06-30: docs: add a research note about NSVisualEffectView and capture exclusion
