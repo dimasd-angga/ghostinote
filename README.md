@@ -177,4 +177,4 @@ MIT — see [`LICENSE`](LICENSE).
 
 macOS screen share notes overlay, hide notes during Zoom screen share, invisible notes during screen recording, speaker notes Zoom Google Meet Teams, private notes during screen sharing macOS, Swift AppKit screen capture exclusion, `NSWindow.sharingType` `.none`, `ScreenCaptureKit` exclude window, presentation notes app macOS, interview cheatsheet screen share.
 
-<!-- bumped: 2025-08-24 -->
+<!-- bumped: 2025-09-02 -->
