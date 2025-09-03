@@ -4,3 +4,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Tested: launching while another full-screen Space is active - overlay appears once we add .fullScreenAuxiliary to collectionBehavior.
 - Observation: hiding the overlay via orderOut() and re-showing it preserves the sharingType setting. No need to re-apply.
 - Open question: does the Sidecar (iPad as second screen) capture path bypass sharingType? Untested.
+- Open question: do Loom and Riverside use ScreenCaptureKit yet? Anecdotal reports say yes. Verify before claiming.
