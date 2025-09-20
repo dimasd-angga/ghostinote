@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2025-09-20: docs: small CONTRIBUTING-style note in research-notes
 - 2025-09-03: docs: tighten architecture doc bullet list
 - 2025-08-25: docs: add an idea to the backlog
 - 2025-08-02: docs: add note about sharingType raw values
