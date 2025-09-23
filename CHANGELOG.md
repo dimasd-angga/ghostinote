@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2025-09-23: chore: refresh build instructions
 - 2025-09-22: docs: cross-link decisions and feasibility docs
 - 2025-09-20: docs: small CONTRIBUTING-style note in research-notes
 - 2025-09-03: docs: tighten architecture doc bullet list
