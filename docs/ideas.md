@@ -20,3 +20,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Investigate Stage Manager interactions on macOS 14.
 - Look into NSAccessibility to ensure VoiceOver announces the overlay correctly.
 - Idea: tiny in-window debug overlay (Cmd+Option+D) showing sharingType state.
+- Consider a small first-run window explaining what the overlay does.
