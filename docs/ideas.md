@@ -19,3 +19,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Idea: support drag-handle for resizing from any edge, not just the corner.
 - Investigate Stage Manager interactions on macOS 14.
 - Look into NSAccessibility to ensure VoiceOver announces the overlay correctly.
+- Idea: tiny in-window debug overlay (Cmd+Option+D) showing sharingType state.
