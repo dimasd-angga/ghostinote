@@ -15,3 +15,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Initial test: minimal NSWindow with sharingType=.none works in isolation. Need to confirm with NSVisualEffectView background.
 - Noticed: AppKit logs nothing when sharingType is set; no public KVO either. We rely on the self-test for verification.
 - Confirmed: setting sharingType after the window is on screen still works, but a brief frame may be captured. Better to set in init.
+- Noticed: window.windowNumber is 0 until the window is ordered front; this matters for the CGWindowListCreateImage self-test.
