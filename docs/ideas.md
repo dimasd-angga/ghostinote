@@ -8,3 +8,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Idea: keyboard-driven note switcher (Cmd+K palette).
 - Investigate using NSPasteboard to paste a note's contents elsewhere quickly.
 - Investigate whether NSWindow.collectionBehavior changes during Mission Control affect sharingType.
+- Idea: a tiny 'last edited' relative timestamp in the toolbar.
