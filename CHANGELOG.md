@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2025-11-13: docs: add a sentence on macOS 15 Sequoia compatibility
 - 2025-11-12: docs: link SECURITY policy from the README
 - 2025-10-18: docs: rename a couple of section headings for clarity
 - 2025-09-23: chore: refresh build instructions
