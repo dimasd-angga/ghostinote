@@ -5,3 +5,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Observation: hiding the overlay via orderOut() and re-showing it preserves the sharingType setting. No need to re-apply.
 - Open question: does the Sidecar (iPad as second screen) capture path bypass sharingType? Untested.
 - Open question: do Loom and Riverside use ScreenCaptureKit yet? Anecdotal reports say yes. Verify before claiming.
+- Verified: macOS built-in screenshot (Cmd+Shift+5) excludes the overlay in both 'screenshot' and 'recording' modes.
