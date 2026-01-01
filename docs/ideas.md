@@ -9,3 +9,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Investigate using NSPasteboard to paste a note's contents elsewhere quickly.
 - Investigate whether NSWindow.collectionBehavior changes during Mission Control affect sharingType.
 - Idea: a tiny 'last edited' relative timestamp in the toolbar.
+- Look at SwiftUI .focusable() to ensure the editor keeps focus when the window is brought to front.
