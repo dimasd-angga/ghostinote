@@ -11,3 +11,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Idea: a tiny 'last edited' relative timestamp in the toolbar.
 - Look at SwiftUI .focusable() to ensure the editor keeps focus when the window is brought to front.
 - Look at NSWindow.animationBehavior to tune the show/hide animation.
+- Add a tooltip on the green dot explaining what 'capture-protected' means.
