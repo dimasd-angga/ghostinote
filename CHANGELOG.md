@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2026-01-13: docs: small README polish
 - 2025-12-26: docs: small README polish on the FAQ section
 - 2025-11-15: docs: expand the 'what does NOT block' caveat in feasibility
 - 2025-11-13: docs: add a sentence on macOS 15 Sequoia compatibility
