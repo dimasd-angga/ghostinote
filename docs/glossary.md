@@ -6,3 +6,4 @@ Terms used across the docs.
 - **Capture exclusion** — the mechanism by which a window is omitted from the pixels returned to apps that request a screen capture.
 - **`sharingType`** — `NSWindow` property that controls capture exclusion. `.none` excludes; `.readOnly` is the default.
 - **Accessory app** — an app with `LSUIElement = true` (or `setActivationPolicy(.accessory)`) that has no Dock icon and no menu bar of its own.
+- **`getDisplayMedia`** — the W3C Web API used by browsers (and meeting webapps) to request screen capture. Goes through the OS and honors `sharingType`.
