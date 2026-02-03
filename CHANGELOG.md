@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2026-02-03: chore: minor .gitignore tweak
 - 2026-01-29: docs: mention SCShareableContent listing behavior in research notes
 - 2026-01-13: docs: small README polish
 - 2025-12-26: docs: small README polish on the FAQ section
