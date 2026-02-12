@@ -7,3 +7,4 @@ Terms used across the docs.
 - **`sharingType`** — `NSWindow` property that controls capture exclusion. `.none` excludes; `.readOnly` is the default.
 - **Accessory app** — an app with `LSUIElement = true` (or `setActivationPolicy(.accessory)`) that has no Dock icon and no menu bar of its own.
 - **`getDisplayMedia`** — the W3C Web API used by browsers (and meeting webapps) to request screen capture. Goes through the OS and honors `sharingType`.
+- **Active CPU** — a macOS scheduling/billing concept; not relevant for desktop apps, only mentioned in passing for backend services.
