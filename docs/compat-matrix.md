@@ -9,3 +9,4 @@ Manually verified screen-share apps and outcomes.
 | Zoom | 5.17.5 (macOS 13.6) | Excluded |
 | Google Meet (Safari 18) | n/a | Excluded |
 | Cmd+Shift+5 screenshot | macOS 14.5 | Excluded |
+| Discord | 0.0.305 | Excluded |
