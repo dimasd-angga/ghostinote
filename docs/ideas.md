@@ -13,3 +13,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Look at NSWindow.animationBehavior to tune the show/hide animation.
 - Add a tooltip on the green dot explaining what 'capture-protected' means.
 - Look into AXUIElement APIs for detecting active screen-share apps to auto-show a reminder.
+- Add a small button to copy a note's contents to clipboard.
