@@ -9,3 +9,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Tested: rapidly toggling sharingType in a debugger does not crash; the change is observed on the next frame.
 - Observation: when the overlay is on a secondary display, behavior is identical - sharingType is per-window, not per-display.
 - Found: if the user disables 'Displays have separate Spaces' in System Settings, the overlay still works on all monitors.
+- Verified: Google Meet via Chrome 126 getDisplayMedia correctly skips our window.
