@@ -10,3 +10,4 @@ Short notes captured while learning the AppKit / capture pipeline.
 - Observation: when the overlay is on a secondary display, behavior is identical - sharingType is per-window, not per-display.
 - Found: if the user disables 'Displays have separate Spaces' in System Settings, the overlay still works on all monitors.
 - Verified: Google Meet via Chrome 126 getDisplayMedia correctly skips our window.
+- Verified: QuickTime Player's screen recording cleanly excludes the overlay.
