@@ -21,3 +21,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Look into NSAccessibility to ensure VoiceOver announces the overlay correctly.
 - Idea: tiny in-window debug overlay (Cmd+Option+D) showing sharingType state.
 - Consider a small first-run window explaining what the overlay does.
+- Eventually expose a small AppleScript dictionary so power users can script show/hide.
