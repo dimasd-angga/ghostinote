@@ -22,3 +22,4 @@ Loose ideas considered for ghostinote. Not commitments.
 - Idea: tiny in-window debug overlay (Cmd+Option+D) showing sharingType state.
 - Consider a small first-run window explaining what the overlay does.
 - Eventually expose a small AppleScript dictionary so power users can script show/hide.
+- Consider an optional 'never above this app' allowlist for screen recorders.
