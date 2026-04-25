@@ -10,3 +10,4 @@ Manually verified screen-share apps and outcomes.
 | Google Meet (Safari 18) | n/a | Excluded |
 | Cmd+Shift+5 screenshot | macOS 14.5 | Excluded |
 | Discord | 0.0.305 | Excluded |
+| Slack huddles | 4.40.x | Excluded |
