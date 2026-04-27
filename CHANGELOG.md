@@ -1,6 +1,7 @@
 # Changelog
 
 Notable changes to ghostinote. Newest at top.
+- 2026-04-27: docs: minor copy fixes in roadmap
 - 2026-04-25: docs: small README polish on the alternatives table
 - 2026-04-14: docs: tighten overview wording
 - 2026-02-03: chore: minor .gitignore tweak
