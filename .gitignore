@@ -6,3 +6,5 @@ DerivedData/
 *.xcworkspace/xcuserdata/
 xcuserdata/
 Package.resolved
+*.dmg
+build/

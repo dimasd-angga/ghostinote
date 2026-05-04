@@ -4,10 +4,21 @@
 
 Read your speaker notes, talking points, interview cheatsheet, sales script, or meeting agenda while sharing your entire screen. Your audience sees only your desktop and the app you're presenting — the Ghostinote overlay is filtered out of the captured frame by the operating system itself.
 
+[![Download .dmg](https://img.shields.io/github/v/release/dimasd-angga/ghostinote?label=Download%20.dmg&style=for-the-badge&logo=apple&color=black)](https://github.com/dimasd-angga/ghostinote/releases/latest)
 [![macOS](https://img.shields.io/badge/macOS-14%2B-black?logo=apple)](#requirements)
 [![Swift](https://img.shields.io/badge/Swift-6.0-orange?logo=swift)](https://swift.org)
 [![AppKit + SwiftUI](https://img.shields.io/badge/AppKit-%2B%20SwiftUI-blue)](https://developer.apple.com/documentation/appkit)
 [![License](https://img.shields.io/badge/license-MIT-green)](#license)
+
+---
+
+## Download
+
+**[→ Download Ghostinote 0.1.0 (Universal .dmg, 628 KB)](https://github.com/dimasd-angga/ghostinote/releases/latest)**
+
+Universal binary (Apple Silicon + Intel), macOS 14 Sonoma or newer.
+
+First launch: right-click the app in `/Applications` → **Open** → **Open** again. The build is not yet code-signed, so Gatekeeper warns on first run. The binary is the same one this repo builds from source — verify by running `swift build -c release` yourself.
 
 ---
 
