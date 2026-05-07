@@ -49,6 +49,10 @@ struct MarkdownView: View {
             }
         case let .table(header, alignments, rows):
             tableView(header: header, alignments: alignments, rows: rows)
+        case .rule:
+            Divider()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
         }
     }
 

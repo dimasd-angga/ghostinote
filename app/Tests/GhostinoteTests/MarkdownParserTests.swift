@@ -84,6 +84,48 @@ final class MarkdownParserTests: XCTestCase {
         } else { XCTFail() }
     }
 
+    func testParsesThematicBreaks() {
+        let dashes = MarkdownParser.parse("before\n\n---\n\nafter")
+        XCTAssertEqual(dashes.count, 3)
+        if case .paragraph(let p) = dashes[0] { XCTAssertEqual(p, "before") } else { XCTFail() }
+        if case .rule = dashes[1] {} else { XCTFail("expected .rule, got \(dashes[1])") }
+        if case .paragraph(let p) = dashes[2] { XCTAssertEqual(p, "after") } else { XCTFail() }
+
+        let stars = MarkdownParser.parse("***")
+        if case .rule = stars.first {} else { XCTFail("'***' should be a rule") }
+
+        let underscores = MarkdownParser.parse("___")
+        if case .rule = underscores.first {} else { XCTFail("'___' should be a rule") }
+
+        let withSpaces = MarkdownParser.parse("- - -")
+        if case .rule = withSpaces.first {} else { XCTFail("'- - -' should be a rule") }
+    }
+
+    func testThematicBreakDoesNotEatTableSeparator() {
+        let source = """
+        | A | B |
+        |---|---|
+        | 1 | 2 |
+        """
+        let blocks = MarkdownParser.parse(source)
+        XCTAssertEqual(blocks.count, 1)
+        if case .table = blocks[0] {} else { XCTFail("table should win over thematic break") }
+    }
+
+    func testRuleEndsParagraph() {
+        let source = "first line\n---\nsecond line"
+        let blocks = MarkdownParser.parse(source)
+        XCTAssertEqual(blocks.count, 3)
+        if case .paragraph(let p) = blocks[0] { XCTAssertEqual(p, "first line") } else { XCTFail() }
+        if case .rule = blocks[1] {} else { XCTFail() }
+        if case .paragraph(let p) = blocks[2] { XCTAssertEqual(p, "second line") } else { XCTFail() }
+    }
+
+    func testRejectsTwoDashesAsRule() {
+        let blocks = MarkdownParser.parse("--")
+        if case .paragraph = blocks.first {} else { XCTFail("two dashes is not a rule") }
+    }
+
     func testPadsShortRowsAndTrimsLongRows() {
         let source = """
         | A | B | C |

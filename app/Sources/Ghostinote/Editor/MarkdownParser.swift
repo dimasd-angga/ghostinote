@@ -7,6 +7,7 @@ enum MarkdownBlock: Equatable {
     case code(String)
     case list(items: [ListItem])
     case table(header: [String], alignments: [TableAlignment], rows: [[String]])
+    case rule
 
     struct ListItem: Equatable {
         let ordered: Bool
@@ -36,6 +37,12 @@ enum MarkdownParser {
                     i += 1
                 }
                 blocks.append(.code(code.joined(separator: "\n")))
+                i += 1
+                continue
+            }
+
+            if isThematicBreak(trimmed) {
+                blocks.append(.rule)
                 i += 1
                 continue
             }
@@ -93,7 +100,8 @@ enum MarkdownParser {
                 let next = lines[i].trimmingCharacters(in: .whitespaces)
                 if next.isEmpty || headingLevel(next) != nil || next.hasPrefix("```")
                     || next.hasPrefix("> ") || isListItem(next)
-                    || isTableHeader(at: i, in: lines) {
+                    || isTableHeader(at: i, in: lines)
+                    || isThematicBreak(next) {
                     break
                 }
                 paragraph.append(lines[i])
@@ -103,6 +111,16 @@ enum MarkdownParser {
         }
 
         return blocks
+    }
+
+    // MARK: - Thematic break
+
+    static func isThematicBreak(_ s: String) -> Bool {
+        let compact = s.filter { !$0.isWhitespace }
+        guard compact.count >= 3 else { return false }
+        let allowed: Set<Character> = ["-", "*", "_"]
+        guard let first = compact.first, allowed.contains(first) else { return false }
+        return compact.allSatisfy { $0 == first }
     }
 
     // MARK: - Heading
