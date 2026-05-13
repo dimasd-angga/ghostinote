@@ -6,14 +6,25 @@ struct Sidebar: View {
     @State private var renamingID: UUID?
     @State private var renameDraft: String = ""
     @State private var dropTargetIndex: Int?
+    @State private var searchQuery: String = ""
+    @FocusState private var searchFocused: Bool
+
+    private var hits: [NotesViewModel.SearchHit] {
+        viewModel.search(searchQuery)
+    }
+
+    private var isSearching: Bool {
+        !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
+            searchField
             Divider().opacity(0.3)
             list
         }
-        .frame(width: 200)
+        .frame(width: 220)
         .background(Color(nsColor: .textBackgroundColor).opacity(0.25))
     }
 
@@ -33,14 +44,51 @@ struct Sidebar: View {
             .help("New note")
         }
         .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.top, 6)
+        .padding(.bottom, 2)
+    }
+
+    private var searchField: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 11))
+                .foregroundStyle(.tertiary)
+            TextField("Search notes", text: $searchQuery)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12))
+                .focused($searchFocused)
+            if !searchQuery.isEmpty {
+                Button(action: { searchQuery = "" }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                }
+                .buttonStyle(.plain)
+                .help("Clear search")
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.primary.opacity(0.06))
+        )
+        .padding(.horizontal, 10)
+        .padding(.bottom, 6)
     }
 
     private var list: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 2) {
-                ForEach(Array(viewModel.notes.enumerated()), id: \.element.id) { index, note in
-                    row(for: note, at: index)
+                if hits.isEmpty && isSearching {
+                    Text("No matches")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 20)
+                }
+                ForEach(Array(hits.enumerated()), id: \.element.id) { index, hit in
+                    row(for: hit, at: index)
                 }
             }
             .padding(.horizontal, 6)
@@ -49,26 +97,40 @@ struct Sidebar: View {
     }
 
     @ViewBuilder
-    private func row(for note: Note, at index: Int) -> some View {
+    private func row(for hit: NotesViewModel.SearchHit, at index: Int) -> some View {
+        let note = hit.note
         let isSelected = note.id == viewModel.selectedID
         let isRenaming = note.id == renamingID
         let isDropTarget = dropTargetIndex == index
 
         VStack(alignment: .leading, spacing: 2) {
-            if isRenaming {
-                TextField("", text: $renameDraft, onCommit: commitRename)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 12, weight: .semibold))
-                    .onExitCommand(perform: cancelRename)
-            } else {
-                Text(note.title.isEmpty ? "Untitled" : note.title)
-                    .font(.system(size: 12, weight: .semibold))
-                    .lineLimit(1)
-                    .foregroundStyle(.primary)
+            HStack(spacing: 6) {
+                if isRenaming {
+                    TextField("", text: $renameDraft, onCommit: commitRename)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 12, weight: .semibold))
+                        .onExitCommand(perform: cancelRename)
+                } else {
+                    highlightedText(note.title.isEmpty ? "Untitled" : note.title)
+                        .font(.system(size: 12, weight: .semibold))
+                        .lineLimit(1)
+                        .foregroundStyle(.primary)
+                }
+                Spacer(minLength: 4)
+                if isSearching && hit.matchCount > 0 {
+                    Text("\(hit.matchCount)")
+                        .font(.system(size: 9, weight: .semibold))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(
+                            Capsule().fill(Color.accentColor.opacity(0.25))
+                        )
+                        .foregroundStyle(Color.accentColor)
+                }
             }
 
             HStack(spacing: 6) {
-                Text(viewModel.snippet(of: note.id))
+                highlightedText(isSearching && !hit.preview.isEmpty ? hit.preview : viewModel.snippet(of: note.id))
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -119,6 +181,21 @@ struct Sidebar: View {
         } isTargeted: { targeted in
             dropTargetIndex = targeted ? index : (dropTargetIndex == index ? nil : dropTargetIndex)
         }
+    }
+
+    private func highlightedText(_ string: String) -> Text {
+        let trimmed = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return Text(string) }
+
+        var attributed = AttributedString(string)
+        var searchStart = attributed.startIndex
+        while searchStart < attributed.endIndex,
+              let range = attributed[searchStart...].range(of: trimmed, options: .caseInsensitive) {
+            attributed[range].backgroundColor = .yellow.opacity(0.4)
+            attributed[range].foregroundColor = .primary
+            searchStart = range.upperBound
+        }
+        return Text(attributed)
     }
 
     private func relativeTimestamp(_ date: Date) -> String {

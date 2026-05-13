@@ -61,6 +61,45 @@ final class NotesViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isMarkdown(id))
     }
 
+    func testEmptySearchReturnsAllNotes() {
+        let vm = NotesViewModel(store: store)
+        vm.addNote()
+        let hits = vm.search("")
+        XCTAssertEqual(hits.count, vm.notes.count)
+        XCTAssertEqual(Set(hits.map(\.id)), Set(vm.notes.map(\.id)))
+    }
+
+    func testSearchMatchesTitleAndBodyCaseInsensitively() {
+        let vm = NotesViewModel(store: store)
+        let firstID = vm.selectedID
+        vm.updateBody(of: firstID, to: "Apple banana Apple cherry")
+        vm.rename(id: firstID, to: "Fruit")
+
+        vm.addNote()
+        let secondID = vm.selectedID
+        vm.updateBody(of: secondID, to: "no fruit here, just vegetables")
+
+        let hits = vm.search("apple")
+        XCTAssertEqual(hits.count, 1)
+        XCTAssertEqual(hits[0].note.id, firstID)
+        XCTAssertEqual(hits[0].matchCount, 2)
+    }
+
+    func testSearchScoresTitleHits() {
+        let vm = NotesViewModel(store: store)
+        let id = vm.selectedID
+        vm.rename(id: id, to: "meeting prep")
+        vm.updateBody(of: id, to: "talking points for the meeting")
+        let hits = vm.search("meeting")
+        XCTAssertEqual(hits.first?.matchCount, 2) // one in title, one in body
+    }
+
+    func testSearchReturnsNoHitsWhenNoMatch() {
+        let vm = NotesViewModel(store: store)
+        let hits = vm.search("xyzzy-no-such-word")
+        XCTAssertEqual(hits.count, 0)
+    }
+
     func testMoveReordersNotes() {
         let vm = NotesViewModel(store: store)
         let a = vm.notes[0].id

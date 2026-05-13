@@ -138,6 +138,51 @@ final class NotesViewModel {
         modes[id] = mode
     }
 
+    struct SearchHit: Identifiable {
+        let note: Note
+        let matchCount: Int
+        let preview: String
+        var id: UUID { note.id }
+    }
+
+    func search(_ query: String) -> [SearchHit] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            return notes.map { SearchHit(note: $0, matchCount: 0, preview: snippetCache[$0.id] ?? "") }
+        }
+        let needle = trimmed.lowercased()
+        var hits: [SearchHit] = []
+        for note in notes {
+            let title = note.title.lowercased()
+            let body = note.body.lowercased()
+            let titleCount = title.components(separatedBy: needle).count - 1
+            let bodyCount = body.components(separatedBy: needle).count - 1
+            let total = titleCount + bodyCount
+            guard total > 0 else { continue }
+            hits.append(SearchHit(
+                note: note,
+                matchCount: total,
+                preview: Self.matchPreview(body: note.body, needle: trimmed)
+            ))
+        }
+        return hits
+    }
+
+    private static func matchPreview(body: String, needle: String) -> String {
+        guard let range = body.range(of: needle, options: .caseInsensitive) else {
+            return ""
+        }
+        let start = body.index(range.lowerBound, offsetBy: -30, limitedBy: body.startIndex) ?? body.startIndex
+        let end = body.index(range.upperBound, offsetBy: 60, limitedBy: body.endIndex) ?? body.endIndex
+        var snippet = String(body[start..<end])
+        snippet = snippet.replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "  ", with: " ")
+            .trimmingCharacters(in: .whitespaces)
+        let prefix = start > body.startIndex ? "…" : ""
+        let suffix = end < body.endIndex ? "…" : ""
+        return prefix + snippet + suffix
+    }
+
     func move(_ id: UUID, toIndex destination: Int) {
         guard let from = notes.firstIndex(where: { $0.id == id }) else { return }
         let dest = max(0, min(destination, notes.count - 1))
