@@ -18,10 +18,6 @@ struct EditorView: View {
         )
     }
 
-    private var isMarkdown: Bool {
-        viewModel.isMarkdown(viewModel.selectedID)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             toolbar
@@ -29,7 +25,7 @@ struct EditorView: View {
             TabBar(viewModel: viewModel)
             Divider().opacity(0.3)
 
-            if mode.wrappedValue == .preview && isMarkdown {
+            if mode.wrappedValue == .preview {
                 MarkdownView(source: currentText.wrappedValue)
             } else {
                 TextEditor(text: currentText)
@@ -48,7 +44,7 @@ struct EditorView: View {
     }
 
     private var toolbar: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             Toggle(isOn: visibilityBinding) {
                 EmptyView()
             }
@@ -77,14 +73,10 @@ struct EditorView: View {
             .pickerStyle(.segmented)
             .frame(width: 140)
             .labelsHidden()
-            .disabled(!isMarkdown)
-            .opacity(isMarkdown ? 1.0 : 0.5)
-            .help(isMarkdown
-                  ? "Switch between editing and rendered preview"
-                  : "Preview is only available for markdown content")
+            .help("Switch between editing and rendered preview")
         }
-        .padding(.horizontal, 12)
+        .padding(.leading, 10)
+        .padding(.trailing, 10)
         .padding(.vertical, 6)
-        .padding(.leading, 70)
     }
 }

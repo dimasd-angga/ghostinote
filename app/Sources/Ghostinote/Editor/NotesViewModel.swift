@@ -56,9 +56,6 @@ final class NotesViewModel {
         notes[idx].title = Note.deriveTitle(from: body, fallback: notes[idx].title)
         notes[idx].updatedAt = .now
         markdownFlags[id] = MarkdownDetector.looksLikeMarkdown(body)
-        if modes[id] == .preview, markdownFlags[id] == false {
-            modes[id] = .edit
-        }
         scheduleSave(notes[idx])
     }
 

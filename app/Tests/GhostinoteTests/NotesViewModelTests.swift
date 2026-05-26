@@ -61,15 +61,12 @@ final class NotesViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isMarkdown(id))
     }
 
-    func testPreviewModeAutoExitsWhenMarkdownDisappears() {
+    func testPreviewModeIsRetainedEvenForPlainText() {
         let vm = NotesViewModel(store: store)
         vm.addNote()
         let id = vm.selectedID
-        vm.updateBody(of: id, to: "# heading")
+        vm.updateBody(of: id, to: "plain text")
         vm.setMode(.preview, for: id)
         XCTAssertEqual(vm.mode(of: id), .preview)
-
-        vm.updateBody(of: id, to: "plain again")
-        XCTAssertEqual(vm.mode(of: id), .edit)
     }
 }
