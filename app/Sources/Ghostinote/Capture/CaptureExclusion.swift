@@ -8,6 +8,11 @@ enum CaptureExclusion {
     }
 
     @MainActor
+    static func setHidden(_ hidden: Bool, on window: NSWindow) {
+        window.sharingType = hidden ? .none : .readOnly
+    }
+
+    @MainActor
     static func verify(window: NSWindow) -> Bool {
         let windowID = CGWindowID(window.windowNumber)
         // Uses CGWindowListCreateImage (deprecated in 14+, still works and needs
