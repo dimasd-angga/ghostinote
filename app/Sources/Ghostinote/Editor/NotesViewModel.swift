@@ -9,6 +9,7 @@ final class NotesViewModel {
     private(set) var notes: [Note]
     var selectedID: UUID
     private var modes: [UUID: ViewMode] = [:]
+    private var markdownFlags: [UUID: Bool] = [:]
 
     private let store: NoteStore
     private var saveTasks: [UUID: Task<Void, Never>] = [:]
@@ -36,6 +37,9 @@ final class NotesViewModel {
             self.notes = loaded
             self.selectedID = loaded.first!.id
         }
+        for note in notes {
+            markdownFlags[note.id] = MarkdownDetector.looksLikeMarkdown(note.body)
+        }
     }
 
     var selected: Note {
@@ -51,7 +55,15 @@ final class NotesViewModel {
         notes[idx].body = body
         notes[idx].title = Note.deriveTitle(from: body, fallback: notes[idx].title)
         notes[idx].updatedAt = .now
+        markdownFlags[id] = MarkdownDetector.looksLikeMarkdown(body)
+        if modes[id] == .preview, markdownFlags[id] == false {
+            modes[id] = .edit
+        }
         scheduleSave(notes[idx])
+    }
+
+    func isMarkdown(_ id: UUID) -> Bool {
+        markdownFlags[id] ?? false
     }
 
     func rename(id: UUID, to newTitle: String) {
@@ -65,6 +77,7 @@ final class NotesViewModel {
     func addNote() {
         let note = Note(title: "Untitled", body: "")
         notes.insert(note, at: 0)
+        markdownFlags[note.id] = false
         selectedID = note.id
         try? store.save(note)
     }
@@ -74,6 +87,7 @@ final class NotesViewModel {
         try? store.delete(id: id)
         notes.remove(at: idx)
         modes[id] = nil
+        markdownFlags[id] = nil
         if notes.isEmpty {
             addNote()
         } else if selectedID == id {

@@ -45,4 +45,31 @@ final class NotesViewModelTests: XCTestCase {
         vm.closeNote(id: id)
         XCTAssertEqual(vm.mode(of: id), .edit)
     }
+
+    func testIsMarkdownFlagUpdatesWithBody() {
+        let vm = NotesViewModel(store: store)
+        vm.addNote()
+        let id = vm.selectedID
+
+        vm.updateBody(of: id, to: "plain text")
+        XCTAssertFalse(vm.isMarkdown(id))
+
+        vm.updateBody(of: id, to: "# heading\nbody")
+        XCTAssertTrue(vm.isMarkdown(id))
+
+        vm.updateBody(of: id, to: "no longer markdown")
+        XCTAssertFalse(vm.isMarkdown(id))
+    }
+
+    func testPreviewModeAutoExitsWhenMarkdownDisappears() {
+        let vm = NotesViewModel(store: store)
+        vm.addNote()
+        let id = vm.selectedID
+        vm.updateBody(of: id, to: "# heading")
+        vm.setMode(.preview, for: id)
+        XCTAssertEqual(vm.mode(of: id), .preview)
+
+        vm.updateBody(of: id, to: "plain again")
+        XCTAssertEqual(vm.mode(of: id), .edit)
+    }
 }

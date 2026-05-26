@@ -19,7 +19,7 @@ struct EditorView: View {
     }
 
     private var isMarkdown: Bool {
-        MarkdownDetector.looksLikeMarkdown(currentText.wrappedValue)
+        viewModel.isMarkdown(viewModel.selectedID)
     }
 
     var body: some View {
@@ -38,48 +38,50 @@ struct EditorView: View {
                     .padding(8)
             }
         }
-        .onChange(of: currentText.wrappedValue) { _, newValue in
-            if mode.wrappedValue == .preview, !MarkdownDetector.looksLikeMarkdown(newValue) {
-                viewModel.setMode(.edit, for: viewModel.selectedID)
-            }
-        }
+    }
+
+    private var visibilityBinding: Binding<Bool> {
+        Binding(
+            get: { !visibility.isHidden },
+            set: { visibility.isHidden = !$0 }
+        )
     }
 
     private var toolbar: some View {
-        HStack(spacing: 8) {
-            Button(action: { visibility.toggle() }) {
-                HStack(spacing: 6) {
-                    Image(systemName: visibility.isHidden ? "eye.slash.fill" : "eye.fill")
-                        .font(.system(size: 10))
-                    Circle()
-                        .fill(visibility.isHidden ? Color.green : Color.orange)
-                        .frame(width: 8, height: 8)
-                    Text(visibility.isHidden ? "Capture-protected" : "Visible in screenshare")
-                        .font(.caption)
-                        .foregroundStyle(visibility.isHidden ? .secondary : Color.orange)
-                }
-                .contentShape(Rectangle())
+        HStack(spacing: 10) {
+            Toggle(isOn: visibilityBinding) {
+                EmptyView()
             }
-            .buttonStyle(.plain)
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+            .labelsHidden()
             .help(visibility.isHidden
-                  ? "Click to make this window visible to screen sharing"
-                  : "Click to hide this window from screen sharing")
+                  ? "Off: window is hidden from screen sharing"
+                  : "On: window is visible to screen sharing")
 
-            Spacer()
+            Image(systemName: visibility.isHidden ? "eye.slash.fill" : "eye.fill")
+                .font(.system(size: 11))
+                .foregroundStyle(visibility.isHidden ? .secondary : Color.orange)
 
-            if isMarkdown {
-                Picker("", selection: mode) {
-                    Text("Edit").tag(ViewMode.edit)
-                    Text("Preview").tag(ViewMode.preview)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 140)
-                .labelsHidden()
-            } else {
-                Text("Plain text")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+            Text(visibility.isHidden ? "Capture-protected" : "Visible in screenshare")
+                .font(.caption)
+                .foregroundStyle(visibility.isHidden ? .secondary : Color.orange)
+                .lineLimit(1)
+
+            Spacer(minLength: 8)
+
+            Picker("", selection: mode) {
+                Text("Edit").tag(ViewMode.edit)
+                Text("Preview").tag(ViewMode.preview)
             }
+            .pickerStyle(.segmented)
+            .frame(width: 140)
+            .labelsHidden()
+            .disabled(!isMarkdown)
+            .opacity(isMarkdown ? 1.0 : 0.5)
+            .help(isMarkdown
+                  ? "Switch between editing and rendered preview"
+                  : "Preview is only available for markdown content")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
