@@ -15,9 +15,6 @@ final class OverlayWindowController: NSWindowController {
         visualEffect.blendingMode = .behindWindow
         visualEffect.state = .active
         visualEffect.autoresizingMask = [.width, .height]
-        visualEffect.wantsLayer = true
-        visualEffect.layer?.cornerRadius = 12
-        visualEffect.layer?.masksToBounds = true
         visualEffect.addSubview(hostingView)
 
         window.contentView = visualEffect

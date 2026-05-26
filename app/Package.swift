@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "Ghostinote",
     platforms: [
-        .macOS(.v13)
+        .macOS(.v14)
     ],
     products: [
         .executable(name: "Ghostinote", targets: ["Ghostinote"])
