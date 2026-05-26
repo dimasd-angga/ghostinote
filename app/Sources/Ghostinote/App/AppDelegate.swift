@@ -4,6 +4,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var overlayController: OverlayWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        MainMenu.install()
         let controller = OverlayWindowController()
         controller.showOverlay()
         overlayController = controller
