@@ -7,7 +7,7 @@ struct MarkdownView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
-                    block.view
+                    renderBlock(block)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -15,153 +15,31 @@ struct MarkdownView: View {
         }
     }
 
-    private var blocks: [RenderedBlock] {
+    private var blocks: [MarkdownBlock] {
         MarkdownParser.parse(source)
     }
-}
 
-private struct RenderedBlock: Identifiable {
-    let id = UUID()
-    let view: AnyView
-}
-
-private enum MarkdownParser {
-    static func parse(_ source: String) -> [RenderedBlock] {
-        var blocks: [RenderedBlock] = []
-        let lines = source.components(separatedBy: "\n")
-        var i = 0
-
-        while i < lines.count {
-            let line = lines[i]
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-
-            if trimmed.hasPrefix("```") {
-                var code: [String] = []
-                i += 1
-                while i < lines.count, !lines[i].trimmingCharacters(in: .whitespaces).hasPrefix("```") {
-                    code.append(lines[i])
-                    i += 1
-                }
-                blocks.append(codeBlock(code.joined(separator: "\n")))
-                i += 1
-                continue
-            }
-
-            if let heading = headingLevel(trimmed) {
-                let content = String(trimmed.drop(while: { $0 == "#" })).trimmingCharacters(in: .whitespaces)
-                blocks.append(headingBlock(content, level: heading))
-                i += 1
-                continue
-            }
-
-            if trimmed.hasPrefix("> ") {
-                var quote: [String] = []
-                while i < lines.count,
-                      lines[i].trimmingCharacters(in: .whitespaces).hasPrefix("> ") {
-                    quote.append(String(lines[i].trimmingCharacters(in: .whitespaces).dropFirst(2)))
-                    i += 1
-                }
-                blocks.append(quoteBlock(quote.joined(separator: "\n")))
-                continue
-            }
-
-            if isListItem(trimmed) {
-                var items: [(ordered: Bool, text: String)] = []
-                while i < lines.count {
-                    let l = lines[i].trimmingCharacters(in: .whitespaces)
-                    if l.hasPrefix("- ") || l.hasPrefix("* ") || l.hasPrefix("+ ") {
-                        items.append((false, String(l.dropFirst(2))))
-                    } else if let match = l.range(of: #"^\d+\.\s"#, options: .regularExpression) {
-                        items.append((true, String(l[match.upperBound...])))
-                    } else {
-                        break
-                    }
-                    i += 1
-                }
-                blocks.append(listBlock(items))
-                continue
-            }
-
-            if trimmed.isEmpty {
-                i += 1
-                continue
-            }
-
-            var paragraph: [String] = [line]
-            i += 1
-            while i < lines.count {
-                let next = lines[i].trimmingCharacters(in: .whitespaces)
-                if next.isEmpty || headingLevel(next) != nil || next.hasPrefix("```")
-                    || next.hasPrefix("> ") || isListItem(next) {
-                    break
-                }
-                paragraph.append(lines[i])
-                i += 1
-            }
-            blocks.append(paragraphBlock(paragraph.joined(separator: " ")))
-        }
-
-        return blocks
-    }
-
-    private static func headingLevel(_ s: String) -> Int? {
-        var count = 0
-        for ch in s {
-            if ch == "#" { count += 1 } else { break }
-        }
-        guard count >= 1, count <= 6 else { return nil }
-        let rest = s.dropFirst(count)
-        guard rest.first == " " else { return nil }
-        return count
-    }
-
-    private static func isListItem(_ s: String) -> Bool {
-        s.hasPrefix("- ") || s.hasPrefix("* ") || s.hasPrefix("+ ")
-            || s.range(of: #"^\d+\.\s"#, options: .regularExpression) != nil
-    }
-
-    private static func headingBlock(_ text: String, level: Int) -> RenderedBlock {
-        let font: Font
-        switch level {
-        case 1: font = .system(size: 22, weight: .bold)
-        case 2: font = .system(size: 18, weight: .bold)
-        case 3: font = .system(size: 16, weight: .semibold)
-        default: font = .system(size: 14, weight: .semibold)
-        }
-        return RenderedBlock(view: AnyView(
-            inlineText(text)
-                .font(font)
-                .padding(.top, level <= 2 ? 6 : 2)
-        ))
-    }
-
-    private static func paragraphBlock(_ text: String) -> RenderedBlock {
-        RenderedBlock(view: AnyView(inlineText(text).font(.body)))
-    }
-
-    private static func quoteBlock(_ text: String) -> RenderedBlock {
-        RenderedBlock(view: AnyView(
+    @ViewBuilder
+    private func renderBlock(_ block: MarkdownBlock) -> some View {
+        switch block {
+        case let .heading(level, text):
+            heading(text, level: level)
+        case let .paragraph(text):
+            inlineText(text).font(.body)
+        case let .quote(text):
             HStack(alignment: .top, spacing: 8) {
                 Rectangle().fill(Color.secondary.opacity(0.5)).frame(width: 3)
                 inlineText(text).foregroundStyle(.secondary).italic()
             }
             .padding(.vertical, 2)
-        ))
-    }
-
-    private static func codeBlock(_ code: String) -> RenderedBlock {
-        RenderedBlock(view: AnyView(
+        case let .code(code):
             Text(code)
                 .font(.system(.body, design: .monospaced))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(8)
-                .background(Color.black.opacity(0.25))
+                .background(Color(nsColor: .textBackgroundColor).opacity(0.5))
                 .cornerRadius(6)
-        ))
-    }
-
-    private static func listBlock(_ items: [(ordered: Bool, text: String)]) -> RenderedBlock {
-        RenderedBlock(view: AnyView(
+        case let .list(items):
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(Array(items.enumerated()), id: \.offset) { idx, item in
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
@@ -172,10 +50,78 @@ private enum MarkdownParser {
                     }
                 }
             }
-        ))
+        case let .table(header, alignments, rows):
+            tableView(header: header, alignments: alignments, rows: rows)
+        }
     }
 
-    private static func inlineText(_ raw: String) -> Text {
+    private func heading(_ text: String, level: Int) -> some View {
+        inlineText(text)
+            .font(headingFont(for: level))
+            .padding(.top, level <= 2 ? 6 : 2)
+    }
+
+    private func headingFont(for level: Int) -> Font {
+        switch level {
+        case 1: return .system(size: 22, weight: .bold)
+        case 2: return .system(size: 18, weight: .bold)
+        case 3: return .system(size: 16, weight: .semibold)
+        default: return .system(size: 14, weight: .semibold)
+        }
+    }
+
+    private func tableView(header: [String], alignments: [TableAlignment], rows: [[String]]) -> some View {
+        let columnCount = header.count
+        let normalizedAlignments: [TableAlignment] = (0..<columnCount).map { i in
+            i < alignments.count ? alignments[i] : .leading
+        }
+
+        return VStack(alignment: .leading, spacing: 0) {
+            tableRow(header, alignments: normalizedAlignments, isHeader: true)
+            Divider().opacity(0.6)
+            ForEach(Array(rows.enumerated()), id: \.offset) { idx, row in
+                tableRow(row, alignments: normalizedAlignments, isHeader: false)
+                if idx < rows.count - 1 {
+                    Divider().opacity(0.2)
+                }
+            }
+        }
+        .padding(8)
+        .background(Color(nsColor: .textBackgroundColor).opacity(0.3))
+        .cornerRadius(6)
+    }
+
+    @ViewBuilder
+    private func tableRow(_ cells: [String], alignments: [TableAlignment], isHeader: Bool) -> some View {
+        HStack(alignment: .top, spacing: 0) {
+            ForEach(Array(cells.enumerated()), id: \.offset) { i, cell in
+                let alignment = i < alignments.count ? alignments[i] : .leading
+                cellText(cell, isHeader: isHeader)
+                    .frame(maxWidth: .infinity, alignment: swiftUIAlignment(alignment))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 4)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func cellText(_ text: String, isHeader: Bool) -> some View {
+        if isHeader {
+            inlineText(text).font(.system(.callout, design: .default).weight(.semibold))
+        } else {
+            inlineText(text).font(.callout)
+        }
+    }
+
+    private func swiftUIAlignment(_ a: TableAlignment) -> Alignment {
+        switch a {
+        case .leading: return .leading
+        case .center: return .center
+        case .trailing: return .trailing
+        }
+    }
+
+    private func inlineText(_ raw: String) -> Text {
         if let attributed = try? AttributedString(
             markdown: raw,
             options: AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
