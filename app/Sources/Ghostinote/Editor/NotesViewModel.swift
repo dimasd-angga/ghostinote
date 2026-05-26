@@ -1,11 +1,14 @@
 import Foundation
 import Observation
 
+enum ViewMode { case edit, preview }
+
 @MainActor
 @Observable
 final class NotesViewModel {
     private(set) var notes: [Note]
     var selectedID: UUID
+    private var modes: [UUID: ViewMode] = [:]
 
     private let store: NoteStore
     private var saveTasks: [UUID: Task<Void, Never>] = [:]
@@ -70,6 +73,7 @@ final class NotesViewModel {
         guard let idx = notes.firstIndex(where: { $0.id == id }) else { return }
         try? store.delete(id: id)
         notes.remove(at: idx)
+        modes[id] = nil
         if notes.isEmpty {
             addNote()
         } else if selectedID == id {
@@ -79,6 +83,14 @@ final class NotesViewModel {
 
     func select(_ id: UUID) {
         selectedID = id
+    }
+
+    func mode(of id: UUID) -> ViewMode {
+        modes[id] ?? .edit
+    }
+
+    func setMode(_ mode: ViewMode, for id: UUID) {
+        modes[id] = mode
     }
 
     private func scheduleSave(_ note: Note) {

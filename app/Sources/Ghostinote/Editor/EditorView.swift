@@ -2,14 +2,18 @@ import SwiftUI
 
 struct EditorView: View {
     @State private var viewModel = NotesViewModel()
-    @State private var mode: Mode = .edit
-
-    private enum Mode { case edit, preview }
 
     private var currentText: Binding<String> {
         Binding(
             get: { viewModel.body(of: viewModel.selectedID) },
             set: { viewModel.updateBody(of: viewModel.selectedID, to: $0) }
+        )
+    }
+
+    private var mode: Binding<ViewMode> {
+        Binding(
+            get: { viewModel.mode(of: viewModel.selectedID) },
+            set: { viewModel.setMode($0, for: viewModel.selectedID) }
         )
     }
 
@@ -24,25 +28,18 @@ struct EditorView: View {
             TabBar(viewModel: viewModel)
             Divider().opacity(0.3)
 
-            Group {
-                switch mode {
-                case .edit:
-                    TextEditor(text: currentText)
-                        .font(.system(.body, design: .monospaced))
-                        .scrollContentBackground(.hidden)
-                        .padding(8)
-                        .id(viewModel.selectedID)
-                case .preview:
-                    MarkdownView(source: currentText.wrappedValue)
-                }
+            if mode.wrappedValue == .preview && isMarkdown {
+                MarkdownView(source: currentText.wrappedValue)
+            } else {
+                TextEditor(text: currentText)
+                    .font(.system(.body, design: .monospaced))
+                    .scrollContentBackground(.hidden)
+                    .padding(8)
             }
         }
-        .onChange(of: viewModel.selectedID) { _, _ in
-            if mode == .preview, !isMarkdown { mode = .edit }
-        }
         .onChange(of: currentText.wrappedValue) { _, newValue in
-            if mode == .preview, !MarkdownDetector.looksLikeMarkdown(newValue) {
-                mode = .edit
+            if mode.wrappedValue == .preview, !MarkdownDetector.looksLikeMarkdown(newValue) {
+                viewModel.setMode(.edit, for: viewModel.selectedID)
             }
         }
     }
@@ -59,9 +56,9 @@ struct EditorView: View {
             Spacer()
 
             if isMarkdown {
-                Picker("", selection: $mode) {
-                    Text("Edit").tag(Mode.edit)
-                    Text("Preview").tag(Mode.preview)
+                Picker("", selection: mode) {
+                    Text("Edit").tag(ViewMode.edit)
+                    Text("Preview").tag(ViewMode.preview)
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 140)
