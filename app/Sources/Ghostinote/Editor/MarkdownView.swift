@@ -12,6 +12,7 @@ struct MarkdownView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
+            .textSelection(.enabled)
         }
     }
 
