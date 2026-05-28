@@ -6,7 +6,7 @@ final class OverlayWindowController: NSWindowController {
 
     @MainActor
     convenience init() {
-        let frame = NSRect(x: 200, y: 200, width: 420, height: 320)
+        let frame = NSRect(x: 200, y: 200, width: 620, height: 380)
         let window = OverlayWindow(contentRect: frame)
         let visibility = CaptureVisibility()
 

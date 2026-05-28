@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EditorView: View {
     @State private var viewModel = NotesViewModel()
+    @AppStorage("Sidebar.visible") private var sidebarVisible: Bool = true
     @Bindable var visibility: CaptureVisibility
 
     private var currentText: Binding<String> {
@@ -22,17 +23,25 @@ struct EditorView: View {
         VStack(spacing: 0) {
             toolbar
             Divider().opacity(0.3)
-            TabBar(viewModel: viewModel)
-            Divider().opacity(0.3)
-
-            if mode.wrappedValue == .preview {
-                MarkdownView(source: currentText.wrappedValue)
-            } else {
-                TextEditor(text: currentText)
-                    .font(.system(.body, design: .monospaced))
-                    .scrollContentBackground(.hidden)
-                    .padding(8)
+            HStack(spacing: 0) {
+                if sidebarVisible {
+                    Sidebar(viewModel: viewModel)
+                    Divider().opacity(0.3)
+                }
+                editor
             }
+        }
+    }
+
+    @ViewBuilder
+    private var editor: some View {
+        if mode.wrappedValue == .preview {
+            MarkdownView(source: currentText.wrappedValue)
+        } else {
+            TextEditor(text: currentText)
+                .font(.system(.body, design: .monospaced))
+                .scrollContentBackground(.hidden)
+                .padding(8)
         }
     }
 
@@ -45,6 +54,15 @@ struct EditorView: View {
 
     private var toolbar: some View {
         HStack(spacing: 8) {
+            Button(action: { sidebarVisible.toggle() }) {
+                Image(systemName: sidebarVisible ? "sidebar.left" : "sidebar.leading")
+                    .font(.system(size: 13, weight: .medium))
+                    .frame(width: 24, height: 22)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(sidebarVisible ? "Hide notes sidebar" : "Show notes sidebar")
+
             Toggle(isOn: visibilityBinding) {
                 EmptyView()
             }
