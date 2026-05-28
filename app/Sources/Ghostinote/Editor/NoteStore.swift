@@ -42,6 +42,22 @@ struct NoteStore {
         }
     }
 
+    func loadOrder() -> [UUID] {
+        let url = directory.appendingPathComponent("order.json")
+        guard let data = try? Data(contentsOf: url),
+              let strings = try? JSONDecoder().decode([String].self, from: data) else {
+            return []
+        }
+        return strings.compactMap(UUID.init(uuidString:))
+    }
+
+    func saveOrder(_ ids: [UUID]) throws {
+        let url = directory.appendingPathComponent("order.json")
+        let strings = ids.map(\.uuidString)
+        let data = try JSONEncoder().encode(strings)
+        try data.write(to: url, options: .atomic)
+    }
+
     // MARK: - serialization
 
     private static let titleMarker = "<!-- ghostinote:title "

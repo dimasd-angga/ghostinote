@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MarkdownView: View {
-    let source: String
+    let blocks: [MarkdownBlock]
 
     var body: some View {
         ScrollView {
@@ -14,10 +14,6 @@ struct MarkdownView: View {
             .padding(12)
             .textSelection(.enabled)
         }
-    }
-
-    private var blocks: [MarkdownBlock] {
-        MarkdownParser.parse(source)
     }
 
     @ViewBuilder

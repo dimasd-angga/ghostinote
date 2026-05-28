@@ -1,9 +1,11 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct Sidebar: View {
     @Bindable var viewModel: NotesViewModel
     @State private var renamingID: UUID?
     @State private var renameDraft: String = ""
+    @State private var dropTargetIndex: Int?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -37,8 +39,8 @@ struct Sidebar: View {
     private var list: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 2) {
-                ForEach(viewModel.notes) { note in
-                    row(for: note)
+                ForEach(Array(viewModel.notes.enumerated()), id: \.element.id) { index, note in
+                    row(for: note, at: index)
                 }
             }
             .padding(.horizontal, 6)
@@ -47,9 +49,10 @@ struct Sidebar: View {
     }
 
     @ViewBuilder
-    private func row(for note: Note) -> some View {
+    private func row(for note: Note, at index: Int) -> some View {
         let isSelected = note.id == viewModel.selectedID
         let isRenaming = note.id == renamingID
+        let isDropTarget = dropTargetIndex == index
 
         VStack(alignment: .leading, spacing: 2) {
             if isRenaming {
@@ -65,7 +68,7 @@ struct Sidebar: View {
             }
 
             HStack(spacing: 6) {
-                Text(snippet(of: note))
+                Text(viewModel.snippet(of: note.id))
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -79,8 +82,14 @@ struct Sidebar: View {
         .padding(.vertical, 5)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 5)
-                .fill(isSelected ? Color.primary.opacity(0.12) : Color.clear)
+            ZStack {
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(isSelected ? Color.primary.opacity(0.12) : Color.clear)
+                if isDropTarget {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(Color.accentColor, lineWidth: 2)
+                }
+            }
         )
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { beginRename(note) }
@@ -93,19 +102,23 @@ struct Sidebar: View {
                 Button("Delete", role: .destructive) { viewModel.closeNote(id: note.id) }
             }
         }
-    }
-
-    private func snippet(of note: Note) -> String {
-        let bodyMinusFirstLine: String = {
-            var lines = note.body.split(separator: "\n", omittingEmptySubsequences: false)
-            if !lines.isEmpty { lines.removeFirst() }
-            return lines.joined(separator: " ")
-        }()
-        let cleaned = bodyMinusFirstLine
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "  ", with: " ")
-        if cleaned.isEmpty { return "No additional text" }
-        return cleaned.count <= 60 ? cleaned : String(cleaned.prefix(58)) + "…"
+        .draggable(note.id.uuidString) {
+            Text(note.title.isEmpty ? "Untitled" : note.title)
+                .font(.system(size: 12, weight: .semibold))
+                .padding(6)
+                .background(Color(nsColor: .controlBackgroundColor))
+                .cornerRadius(4)
+        }
+        .dropDestination(for: String.self) { items, _ in
+            dropTargetIndex = nil
+            guard let raw = items.first, let droppedID = UUID(uuidString: raw) else {
+                return false
+            }
+            viewModel.move(droppedID, toIndex: index)
+            return true
+        } isTargeted: { targeted in
+            dropTargetIndex = targeted ? index : (dropTargetIndex == index ? nil : dropTargetIndex)
+        }
     }
 
     private func relativeTimestamp(_ date: Date) -> String {

@@ -36,7 +36,7 @@ struct EditorView: View {
     @ViewBuilder
     private var editor: some View {
         if mode.wrappedValue == .preview {
-            MarkdownView(source: currentText.wrappedValue)
+            MarkdownView(blocks: viewModel.parsedBlocks(of: viewModel.selectedID))
         } else {
             TextEditor(text: currentText)
                 .font(.system(.body, design: .monospaced))
